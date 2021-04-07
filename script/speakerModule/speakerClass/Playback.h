@@ -14,7 +14,7 @@ volatile int playing = 0;
 int buttonIn = 13;
 int buttonOut = 12;
 
-
+// Interrupt simulating an NFC being tagged
 void IRAM_ATTR handleInterrupt()
   {
     static unsigned long last_interrupt_time = 0;
@@ -52,8 +52,37 @@ class Speaker {
   void MP3Setup(){
     out = new AudioOutputI2S();
     mp3 = new AudioGeneratorMP3();
+
+    //Setup SD Card
+//    delay(1000);
+//    Serial.print("Initializing SD card...");
+//    if (!SD.begin(33))
+//    {
+//      Serial.println("initialization failed!");
+//      return;
+//    }
+//    Serial.println("initialization done.");
+//    delay(100);
   }
 
+  // Loop to handle action when NFC is tagged
+  void MP3SelectLoop(){
+    if (nfcTriggered>0){
+
+//      if(playing && mp3->isRunning()) mp3->stop();
+      
+      char filename[1024];
+      sprintf(filename, "nfctest%i.mp3",nfcTriggered);
+//      file = new AudioFileSourceSD(filename);
+//      out -> SetGain(0.125); //Set the volume
+//      mp3 -> begin(file,out); //Start playing the track loaded
+//      nfcTriggered = 0;
+      
+      Serial.printf("Playing track %s\n",filename);
+    }
+  }
+  
+  // Loop to handle playing of mp3
   void MP3Loop(){
     if(playing && mp3->isRunning()) {
       if (!mp3->loop())
