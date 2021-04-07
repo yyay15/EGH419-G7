@@ -20,22 +20,6 @@ void readFile(fs::FS &fs, const char * path){
     }
 }
 
-// char* readLine(fs::FS &fs, const char * path){
-//     char lines[40];
-//     File file = fs.open(path);
-//     int j = 0;
-//     while (file.available()) {
-//       int c = file.read();
-//       if (c < 0 || c == '\n') {
-//         return &lines;
-//       } else {
-//         lines[j] = c;
-//         j++;
-//       }
-//     }
-//     return lines;
-// }
-
 void readLine(fs::FS &fs, const char * path, String* lines) {
     File file = fs.open(path);
     char line[40], *ptr, *str;
@@ -56,7 +40,6 @@ bool singleLine(File &f, char* line, size_t maxLen) {
   }
   return false; // line too long
 }
-
 
 void readCSV(fs::FS &fs, const char * path, char* line) {
     File f = fs.open(path);
@@ -93,23 +76,6 @@ void linetoField(String* lines, String* NFC_code, String* audioFile) {
     }
 }
 
-
- 
-void writeFile(fs::FS &fs, const char * path, const char * message){
-    Serial.printf("Writing file: %s\n", path);
-    
-    File file = fs.open(path, FILE_WRITE);
-    if(!file){
-    Serial.println("Failed to open file for writing");
-    return;
-    }
-    if(file.print(message)){
-    Serial.println("File written");
-    } else {
-    Serial.println("Write failed");
-    }
-}
- 
 void appendFile(fs::FS &fs, const char * path, const char * message){
     Serial.printf("Appending to file: %s\n", path);
     
