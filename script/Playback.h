@@ -10,10 +10,16 @@
 #include "driver/i2s.h"
 #include <SD.h>
 
+
+
+
+
+//Constants
 volatile int nfcTriggered = 1;
 volatile int playing = 0;
 int buttonIn = 13;
 int buttonOut = 12;
+
 
 // Interrupt simulating an NFC being tagged
 void IRAM_ATTR handleInterrupt()
@@ -54,67 +60,46 @@ class Speaker {
   void WAVSetup(){
     out = new AudioOutputI2S();
     wav = new AudioGeneratorWAV();
+    out -> SetPinout(26,25,27);
 
     // Setup SD Card
-  //  delay(1000);
-  //  Serial.print("Initializing SD card...");
-  //  if (!SD.begin(33))
-  //  {
-  //    Serial.println("initialization failed!");
-  //    return;
-  //  }
-  //  Serial.println("initialization done.");
-  //  delay(100);
+    delay(1000);
+    Serial.print("Initializing SD card...");
+    if (!SD.begin(33))
+    {
+      Serial.println("initialization failed!");
+      return;
+    }
+    Serial.println("initialization done.");
+    delay(100);
   }
 
-  // Loop to handle action when NFC is tagged
   void WAVSelectLoop(String filename){
-    if (nfcTriggered>0 && playing == 0){
 
-    //  if(playing && mp3->isRunning()) mp3->stop();
-      
-      // char filename[1024];
-      // sprintf(filename, "nfctest%i.mp3",nfcTriggered);
-      file = new AudioFileSourceSD(filename);
+      int strlen = filename.length()+1;
+      char wavname[strlen];
+      filename.toCharArray(wavname,strlen);
+      Serial.printf("attempting to play %s \n",wavname);
+      file = new AudioFileSourceSD(wavname);
       out -> SetGain(0.125); //Set the volume
       wav -> begin(file,out); //Start playing the track loaded
       //  nfcTriggered = 0;
       playing = 1;
       
       Serial.printf("Playing track %s\n",filename);
-    }
   }
   
+
   // Loop to handle playing of mp3
   void WAVLoop(){
-    if(playing && wav->isRunning()) {
-      if (!mp3->loop())
+    while(playing && wav->isRunning()) {
+      Serial.println("playing 1 and wav running");
+      if (!wav->loop())
       {
         wav->stop();
-        playing = 0;
+//        playing = 0;
         Serial.println("Stopped");
       }
     }
-  }
-  
-  void AACSetup(){
-  audioLogger = &Serial;
-  in = new AudioFileSourcePROGMEM(sampleaac, sizeof(sampleaac));
-  aac = new AudioGeneratorAAC();
-  out = new AudioOutputI2S();
-  out -> SetGain(0.125);
-  out -> SetPinout(26,25,27);
-  aac->begin(in, out);
-    
-  }
-  void AACLoop(){
-    if (aac->isRunning()) {
-    aac->loop();
-    } else {
-      aac-> stop();
-      Serial.printf("AAC done\n");
-      delay(1000);
-    }
-    
   }
 };

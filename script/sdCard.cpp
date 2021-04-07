@@ -16,18 +16,20 @@ String SdCard::_NFCtoAudio(const char * receiveCode, String* NFC_code, String* a
                 return audioFile[i];
             }
         }
-        return "error.wav";
+        return "/error.wav";
 }
 
 void SdCard::processCSV() {
     Serial.begin(115200);
-    SD.begin();
+    SD.begin(33);
     char csv[200];
     String lines[20];
     readCSV(SD, "/data.csv", csv);
     SD.end();
     CSVtoLine(csv, lines);
     lineToField(lines, NFC_code, audioFile);
+    Serial.println(NFC_code[0]);
+    Serial.println(audioFile[0]);
 }
 
 void SdCard::readCSV(fs::FS &fs, const char * path, char* line) {
@@ -67,7 +69,7 @@ void SdCard::lineToField(String* lines, String* NFC_code, String* audioFile) {
 
 void SdCard::writeToCSV(const char * NFC_code, const char * audioFile) {
     Serial.begin(115200);
-    SD.begin();
+    SD.begin(33);
     _writeToCSV(SD, "/data.csv", NFC_code, audioFile);
     //readFile(SD, "/data.csv");
     SD.end();

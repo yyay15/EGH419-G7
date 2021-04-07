@@ -14,9 +14,9 @@ class SdCard {
         String NFCtoAudio(const char * receiveCode);
         void processCSV();
         void writeToCSV(const char * NFC_code, const char * audioFile);
+        String audioFile[20];
     private:
         String NFC_code[20];
-        String audioFile[20];
         void readCSV(fs::FS &fs, const char * path, char* line);
         void CSVtoLine(char* csv, String* lines);
         void lineToField(String* lines, String* NFC_code, String* audioFile);

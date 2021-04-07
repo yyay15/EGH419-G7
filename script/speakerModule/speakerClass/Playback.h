@@ -11,7 +11,7 @@
 #include <SD.h>
 
 volatile int nfcTriggered = 1;
-volatile int playing = 0;
+volatile int playing = 1;
 int buttonIn = 13;
 int buttonOut = 12;
 
@@ -25,7 +25,7 @@ void IRAM_ATTR handleInterrupt()
     {
       //Figure out which switch was triggered, and which track to play
       if(digitalRead(buttonIn)) nfcTriggered += 1;
-      playing = 1;
+//      playing = 0;
     }
     last_interrupt_time = interrupt_time;
   }
@@ -51,30 +51,52 @@ class Speaker {
     attachInterrupt(digitalPinToInterrupt(buttonIn),handleInterrupt,FALLING);
   }
 
+  void MP3Setup(){
+    out = new AudioOutputI2S();
+    mp3 = new AudioGeneratorMP3();
+    out -> SetPinout(26,25,27);
+
+    // Setup SD Card
+    delay(1000);
+    Serial.print("Initializing SD card...");
+    if (!SD.begin(33))
+    {
+      Serial.println("initialization failed!");
+      return;
+    }
+    Serial.println("initialization done.");
+    delay(100);
+  }
   void WAVSetup(){
     out = new AudioOutputI2S();
     wav = new AudioGeneratorWAV();
+    out -> SetPinout(26,25,27);
 
     // Setup SD Card
-  //  delay(1000);
-  //  Serial.print("Initializing SD card...");
-  //  if (!SD.begin(33))
-  //  {
-  //    Serial.println("initialization failed!");
-  //    return;
-  //  }
-  //  Serial.println("initialization done.");
-  //  delay(100);
+    delay(1000);
+    Serial.print("Initializing SD card...");
+    if (!SD.begin(33))
+    {
+      Serial.println("initialization failed!");
+      return;
+    }
+    Serial.println("initialization done.");
+    delay(100);
   }
 
   // Loop to handle action when NFC is tagged
-  void WAVSelectLoop(String filename){
-    if (nfcTriggered>0 && playing == 0){
-
-    //  if(playing && mp3->isRunning()) mp3->stop();
+  void MP3SelectLoop(){
+      char filename[] = "/4.mp3";
+      file = new AudioFileSourceSD(filename);
+      out -> SetGain(0.125); //Set the volume
+      mp3 -> begin(file,out); //Start playing the track loaded
+      //  nfcTriggered = 0;
+      playing = 1;
       
-      // char filename[1024];
-      // sprintf(filename, "nfctest%i.mp3",nfcTriggered);
+      Serial.printf("Playing track %s\n",filename);
+  }
+  void WAVSelectLoop(){
+      char filename[] = "/3.wav";
       file = new AudioFileSourceSD(filename);
       out -> SetGain(0.125); //Set the volume
       wav -> begin(file,out); //Start playing the track loaded
@@ -82,16 +104,29 @@ class Speaker {
       playing = 1;
       
       Serial.printf("Playing track %s\n",filename);
-    }
   }
   
   // Loop to handle playing of mp3
-  void WAVLoop(){
-    if(playing && wav->isRunning()) {
+  void MP3Loop(){
+    if(playing && mp3->isRunning()) {
+      Serial.println("playing 1 and mp3 running");
       if (!mp3->loop())
       {
+        mp3->stop();
+//        playing = 0;
+        Serial.println("Stopped");
+      }
+    }
+  }
+
+  // Loop to handle playing of mp3
+  void WAVLoop(){
+    if(playing && wav->isRunning()) {
+      Serial.println("playing 1 and wav running");
+      if (!wav->loop())
+      {
         wav->stop();
-        playing = 0;
+//        playing = 0;
         Serial.println("Stopped");
       }
     }
