@@ -1,5 +1,6 @@
 {
-    "configuration": "FlashFreq=80,PartitionScheme=default,UploadSpeed=921600,DebugLevel=none",
     "board": "esp32:esp32:esp32thing",
-    "port": "COM5"
+    "port": "COM3",
+    "configuration": "FlashFreq=80,PartitionScheme=default,UploadSpeed=921600,DebugLevel=none",
+    "sketch": "script\\sdCard\\testReadFile\\testReadFile.ino"
 }
