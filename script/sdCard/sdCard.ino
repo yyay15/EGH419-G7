@@ -3,8 +3,10 @@
 SdCard SDC;
 
 void setup(){
+
+    SDC.writeToCSV("7NFC", "7.wav");
     SDC.processCSV();
-    String matchAudio = SDC.NFCtoAudio("2NFC");
+    String matchAudio = SDC.NFCtoAudio("7NFC");
     Serial.println(matchAudio);
 }
 
