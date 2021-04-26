@@ -1,6 +1,7 @@
 /** Include files **/
 #include "sdCard.h"
 #include "Playback.h"
+#include "nfcModule.h"
 
 // NFC Libraries
 #include <Wire.h>
@@ -8,24 +9,19 @@
 #include <PN532.h>
 #include <NfcAdapter.h>
 
-/** Variable definitions **/
-PN532_I2C pn532_i2c(Wire);
-
-// NFC Initialise
-NfcAdapter nfc = NfcAdapter(pn532_i2c);
-
-
 /** Instantiate classes **/
 SdCard SDC; 
 Speaker speaker;
+nfcReader nfcReaderVal;
+
+
 void setup(){
 // SD card set up
     // read in CSV file 
     SDC.processCSV();
 
 // NFC set up
-    Serial.println("NDEF Reader");
-    nfc.begin();
+    nfcReaderVal.startNFC();
     
 // Speaker set up
     speaker.GeneralSetup();
@@ -42,11 +38,9 @@ void setup(){
 
 void loop() {
 
-    Serial.println("\nScan a NFC tag\n");
-    if (nfc.tagPresent()){
-        NfcTag tag = nfc.read();
-        String tagId = tag.getUidString();
-
+  Serial.println("\nScan a NFC tag\n");
+  if(nfcReaderVal.checkTag()){
+        String tagId = nfcReaderVal.returnUID();
         int strlen = tagId.length()+1;
         char tagName[strlen];
         tagId.toCharArray(tagName,strlen);
