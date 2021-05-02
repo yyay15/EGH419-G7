@@ -21,7 +21,7 @@ String SdCard::_NFCtoAudio(const char * receiveCode, String* NFC_code, String* a
 
 void SdCard::processCSV() {
     Serial.begin(115200);
-    SD.begin(33);
+    SD.begin(5);
     char csv[200];
     String lines[20];
     readCSV(SD, "/data.csv", csv);
@@ -69,7 +69,7 @@ void SdCard::lineToField(String* lines, String* NFC_code, String* audioFile) {
 
 void SdCard::writeToCSV(const char * NFC_code, const char * audioFile) {
     Serial.begin(115200);
-    SD.begin(33);
+    SD.begin(5);
     _writeToCSV(SD, "/data.csv", NFC_code, audioFile);
     //readFile(SD, "/data.csv");
     SD.end();

@@ -65,7 +65,7 @@ class Speaker {
     // Setup SD Card
     delay(1000);
     Serial.print("Initializing SD card...");
-    if (!SD.begin(33))
+    if (!SD.begin(5))
     {
       Serial.println("initialization failed!");
       return;

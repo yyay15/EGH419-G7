@@ -84,6 +84,8 @@ void loop() {
 
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
+
+      Serial.println("Recording mode");
       
       // Create file name
       String fileName = "/" + tagId + ".wav";
@@ -92,11 +94,12 @@ void loop() {
       mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
 
       // Write record to CSV
-      SDC.writeToCSV(tagId.c_str(), 
+      SDC.writeToCSV(tagId.c_str(), fileName.c_str());
 
     // Recording button not pressed, play corresponding sound file
     } else {
-      String audioFile = SDC.NFCtoAudio(tagName);
+      Serial.println("Playback mode mode");
+      String audioFile = SDC.NFCtoAudio(tagId.c_str());
       speaker.WAVSelectLoop(audioFile);
     }
   

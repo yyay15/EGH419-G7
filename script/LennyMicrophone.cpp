@@ -61,6 +61,7 @@ int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afte
   int16_t *samples = (int16_t *)malloc(sizeof(int16_t) * 1024);
   
   Serial.println("Start recording");
+  SD.begin(5);
   begin();
   
   // Open the file on the SD card
@@ -103,6 +104,7 @@ int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afte
   end();
   int fileSize = writer.end();
   f.close();
+  SD.end();
   free(samples);
   
   Serial.print(fileSize);

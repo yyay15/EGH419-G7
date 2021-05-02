@@ -1,7 +1,5 @@
 #define SDCARD_H
-//https://github.com/arduino-libraries/SD
-// for audio playback https://github.com/TMRh20/TMRpcm
-// https://forum.arduino.cc/index.php?topic=231631.0 read csv file
+
 #include "SD.h"
 #include "FS.h"
 #include "SPI.h"
