@@ -46,7 +46,7 @@ i2s_pin_config_t micPins = {
 SdCard SDC; 
 Speaker speaker;
 nfcReader nfcReaderVal;
-LennyMicrophone mic(I2S_NUM_0, micPins, micConfig);
+//LennyMicrophone mic(I2S_NUM_0, micPins, micConfig);
 
 void recordingStart()
 {
@@ -54,19 +54,30 @@ void recordingStart()
 }
 
 void setup(){
-  // SD card setup
-  SDC.processCSV();
-
+  Serial.begin(115200);
   // NFC setup
-  nfcReaderVal.startNFC();
+  Serial.println("starting NFC");
+  while(!nfcReaderVal.startNFC()){
+    Serial.println("fail nfc");
+  }
+  Serial.println("Finish NFC");
+  // SD card setup
+  Serial.println("Starting CSV");
+//  SDC.processCSV();
+  Serial.println("Finsih CSV");
+
     
   // Speaker setup
+  Serial.println("Starting General");
   speaker.GeneralSetup();
+  Serial.println("Finish General");
+  Serial.println("Starting WAV");
   speaker.WAVSetup();
+  Serial.println("Finish WAV");
   
   // Mic setup
-  mic.begin();
-  pinMode(REC_BUTTON_PIN, INPUT);
+//  mic.begin();
+//  pinMode(REC_BUTTON_PIN, INPUT);
 }
 
 
@@ -74,13 +85,13 @@ void loop() {
 
   Serial.println("\nScan an NFC tag\n");
   if(nfcReaderVal.checkTag()){
-
+    Serial.println("I scanned Something");
     // Get UID of NFC tag
     String tagId = nfcReaderVal.returnUID();
     Serial.println(tagId);
-    //int strlen = tagId.length()+1;
-    //char tagName[strlen];
-    //tagId.toCharArray(tagName,strlen);
+    int strlen = tagId.length()+1;
+    char tagName[strlen];
+    tagId.toCharArray(tagName,strlen);
 
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
@@ -91,7 +102,7 @@ void loop() {
       String fileName = "/" + tagId + ".wav";
 
       // Record microphone
-      mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
+//      mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
 
       // Write record to CSV
       SDC.writeToCSV(tagId.c_str(), fileName.c_str());
@@ -99,7 +110,7 @@ void loop() {
     // Recording button not pressed, play corresponding sound file
     } else {
       Serial.println("Playback mode mode");
-      String audioFile = SDC.NFCtoAudio(tagId.c_str());
+      String audioFile = SDC.NFCtoAudio(tagName);
       speaker.WAVSelectLoop(audioFile);
     }
   

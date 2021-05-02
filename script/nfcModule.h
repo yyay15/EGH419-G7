@@ -32,8 +32,8 @@ class nfcReader {
       delete nfcObject;
     }
 
-    void startNFC(){
-      nfcObject->begin();
+    bool startNFC(){
+      return nfcObject->begin();
     }
 
     boolean checkTag(){

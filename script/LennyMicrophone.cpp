@@ -49,7 +49,7 @@ int LennyMicrophone::read(int16_t *samples, int count)
         
         // Bit-shift down to 16-bit int
         // Not sifting all the way to amplify the signal
-        samples[i] >>= raw_samples[i] >> 11;
+        samples[i] = raw_samples[i] >> 11;
     }
     
     free(raw_samples);
@@ -101,7 +101,6 @@ int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afte
   }
   
   // Clean up mic, writer and SD card
-  end();
   int fileSize = writer.end();
   f.close();
   SD.end();
