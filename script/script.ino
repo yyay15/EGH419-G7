@@ -46,7 +46,7 @@ i2s_pin_config_t micPins = {
 SdCard SDC; 
 Speaker speaker;
 nfcReader nfcReaderVal;
-//LennyMicrophone mic(I2S_NUM_0, micPins, micConfig);
+LennyMicrophone mic(I2S_NUM_0, micPins, micConfig);
 
 void recordingStart()
 {
@@ -76,8 +76,8 @@ void setup(){
   Serial.println("Finish WAV");
   
   // Mic setup
-//  mic.begin();
-//  pinMode(REC_BUTTON_PIN, INPUT);
+  mic.begin();
+  pinMode(REC_BUTTON_PIN, INPUT);
 }
 
 
@@ -102,7 +102,7 @@ void loop() {
       String fileName = "/" + tagId + ".wav";
 
       // Record microphone
-//      mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
+      mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
 
       // Write record to CSV
       SDC.writeToCSV(tagId.c_str(), fileName.c_str());
