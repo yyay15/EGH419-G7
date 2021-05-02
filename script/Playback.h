@@ -17,24 +17,24 @@
 //Constants
 volatile int nfcTriggered = 1;
 volatile int playing = 0;
-int buttonIn = 13;
-int buttonOut = 12;
+//int buttonIn = 13;
+//int buttonOut = 12;
 
 
 // Interrupt simulating an NFC being tagged
-void IRAM_ATTR handleInterrupt()
-  {
-    static unsigned long last_interrupt_time = 0;
-    unsigned long interrupt_time = millis();
-    // If interrupts come faster than 200ms, assume it's a bounce and ignore
-    if (interrupt_time - last_interrupt_time > 200) 
-    {
-      //Figure out which switch was triggered, and which track to play
-      if(digitalRead(buttonIn)) nfcTriggered += 1;
-      playing = 1;
-    }
-    last_interrupt_time = interrupt_time;
-  }
+//void IRAM_ATTR handleInterrupt()
+//  {
+//    static unsigned long last_interrupt_time = 0;
+//    unsigned long interrupt_time = millis();
+//    // If interrupts come faster than 200ms, assume it's a bounce and ignore
+//    if (interrupt_time - last_interrupt_time > 200) 
+//    {
+//      //Figure out which switch was triggered, and which track to play
+//      if(digitalRead(buttonIn)) nfcTriggered += 1;
+//      playing = 1;
+//    }
+//    last_interrupt_time = interrupt_time;
+//  }
 
 class Speaker {
 
@@ -50,11 +50,11 @@ class Speaker {
   
 
   void GeneralSetup(){
-    pinMode(buttonIn, INPUT);
-    pinMode(buttonOut, OUTPUT);
-    digitalWrite(buttonOut, HIGH);
-    digitalWrite(buttonIn, LOW);
-    attachInterrupt(digitalPinToInterrupt(buttonIn),handleInterrupt,FALLING);
+//    pinMode(buttonIn, INPUT);
+//    pinMode(buttonOut, OUTPUT);
+//    digitalWrite(buttonOut, HIGH);
+//    digitalWrite(buttonIn, LOW);
+//    attachInterrupt(digitalPinToInterrupt(buttonIn),handleInterrupt,FALLING);
   }
 
   void WAVSetup(){
@@ -80,8 +80,9 @@ class Speaker {
       char wavname[strlen];
       filename.toCharArray(wavname,strlen);
       Serial.printf("attempting to play %s \n",wavname);
+//      file = new AudioFileSourceSD("/error.wav");
       file = new AudioFileSourceSD(wavname);
-      out -> SetGain(0.125); //Set the volume
+      out -> SetGain(0.25); //Set the volume
       wav -> begin(file,out); //Start playing the track loaded
       //  nfcTriggered = 0;
       playing = 1;
@@ -101,5 +102,30 @@ class Speaker {
         Serial.println("Stopped");
       }
     }
+  }
+
+   void AACSetup(){
+  //audioLogger = &Serial;
+  in = new AudioFileSourcePROGMEM(sampleaac, sizeof(sampleaac));
+  aac = new AudioGeneratorAAC();
+  out = new AudioOutputI2S();
+  out -> SetGain(0.125);
+  out -> SetPinout(26,25,27);
+    
+  }
+
+  void AACSelect(){
+    
+  aac->begin(in, out);
+  }
+  void AACLoop(){
+    if (aac->isRunning()) {
+    aac->loop();
+    } else {
+      aac-> stop();
+      Serial.printf("AAC done\n");
+      delay(1000);
+    }
+    
   }
 };

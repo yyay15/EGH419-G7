@@ -46,13 +46,13 @@ i2s_pin_config_t micPins = {
 SdCard SDC; 
 Speaker speaker;
 nfcReader nfcReaderVal;
-LennyMicrophone mic(I2S_NUM_0, micPins, micConfig);
+LennyMicrophone mic(I2S_NUM_1, micPins, micConfig);
 
 void recordingStart()
 {
   Serial.println("One second passed");
 }
-
+  
 void setup(){
   Serial.begin(115200);
   // NFC setup
@@ -65,7 +65,6 @@ void setup(){
   Serial.println("Starting CSV");
 //  SDC.processCSV();
   Serial.println("Finsih CSV");
-
     
   // Speaker setup
   Serial.println("Starting General");
@@ -73,6 +72,7 @@ void setup(){
   Serial.println("Finish General");
   Serial.println("Starting WAV");
   speaker.WAVSetup();
+//  speaker.AACSetup();
   Serial.println("Finish WAV");
   
   // Mic setup
@@ -80,27 +80,36 @@ void setup(){
   pinMode(REC_BUTTON_PIN, INPUT);
 }
 
+int numer = 0;
 
 void loop() {
+//  if (numer ==0){
+//    numer++;
+//    speaker.AACSelect();
+//  }
 
   Serial.println("\nScan an NFC tag\n");
   if(nfcReaderVal.checkTag()){
     Serial.println("I scanned Something");
     // Get UID of NFC tag
     String tagId = nfcReaderVal.returnUID();
+    Serial.println("This is string");
     Serial.println(tagId);
     int strlen = tagId.length()+1;
     char tagName[strlen];
     tagId.toCharArray(tagName,strlen);
+    Serial.println("This is char");
+    Serial.println(tagName);
 
+    // Create file name
+    String fileName = "/" + tagId + ".wav";
+
+    
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
 
       Serial.println("Recording mode");
       
-      // Create file name
-      String fileName = "/" + tagId + ".wav";
-
       // Record microphone
       mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
 
@@ -109,13 +118,13 @@ void loop() {
 
     // Recording button not pressed, play corresponding sound file
     } else {
-      Serial.println("Playback mode mode");
-      String audioFile = SDC.NFCtoAudio(tagName);
-      speaker.WAVSelectLoop(audioFile);
+      Serial.println("Playback mode");
+//      String audioFile = SDC.NFCtoAudio(fileName);
+      speaker.WAVSelectLoop(fileName);
     }
-  
   }
 
+//    speaker.AACLoop();
   speaker.WAVLoop();
   delay(2000);
 }
