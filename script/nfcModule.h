@@ -32,6 +32,15 @@ class nfcReader {
       delete nfcObject;
     }
 
+    void nfcReset(){
+      pinMode(15,OUTPUT);
+      digitalWrite(15,HIGH);
+      delay(200);
+      digitalWrite(15,LOW);
+      delay(200);
+      digitalWrite(15,HIGH);
+    }
+  
     bool startNFC(){
       return nfcObject->begin();
     }

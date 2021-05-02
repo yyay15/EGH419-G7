@@ -45,7 +45,7 @@ i2s_pin_config_t micPins = {
 // Globals
 SdCard SDC; 
 Speaker speaker;
-nfcReader nfcReaderVal;
+nfcReader* nfcReaderVal;
 LennyMicrophone mic(I2S_NUM_1, micPins, micConfig);
 
 void recordingStart()
@@ -63,10 +63,13 @@ void setup(){
   Serial.println("Finsih CSV");
   
   // NFC setup
+  nfcReaderVal = new nfcReader();
   Serial.println("starting NFC");
   delay(3000);
-  while(!nfcReaderVal.startNFC()){
+  while(!nfcReaderVal->startNFC()){
     Serial.println("fail nfc");
+    nfcReaderVal->nfcReset();
+    delay(500);
   }
   Serial.println("Finish NFC");
 
@@ -93,11 +96,13 @@ void loop() {
 //    speaker.AACSelect();
 //  }
 
+  
+
   Serial.println("\nScan an NFC tag\n");
-  if(nfcReaderVal.checkTag()){
+  if(nfcReaderVal->checkTag()){
     Serial.println("I scanned Something");
     // Get UID of NFC tag
-    String tagId = nfcReaderVal.returnUID();
+    String tagId = nfcReaderVal->returnUID();
     Serial.println("This is string");
     Serial.println(tagId);
     int strlen = tagId.length()+1;
@@ -131,5 +136,16 @@ void loop() {
 
 //    speaker.AACLoop();
   speaker.WAVLoop();
-  delay(2000);
+  Serial.println("deleting");
+  delete nfcReaderVal;
+  Serial.println("recreate");
+  nfcReaderVal = new nfcReader();
+  while(!nfcReaderVal->startNFC()){
+    Serial.println("fail nfc");
+    nfcReaderVal->nfcReset();
+    delay(500);
+  }
+
+  
+//  delay(2000);
 }

@@ -93,7 +93,7 @@ class Speaker {
   // Loop to handle playing of mp3
   void WAVLoop(){
     while(playing && wav->isRunning()) {
-      Serial.println("playing 1 and wav running");
+      //Serial.println("playing 1 and wav running");
       if (!wav->loop())
       {
         wav->stop();
