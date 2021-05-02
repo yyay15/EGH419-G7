@@ -45,8 +45,6 @@ void loop() {
         speaker.WAVSelectLoop(audioFile);
     }
 
-
-
     speaker.WAVLoop();
     delay(2000);
     // if (nfc code true) {

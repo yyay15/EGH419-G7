@@ -75,7 +75,7 @@ class Speaker {
     // Setup SD Card
     delay(1000);
     Serial.print("Initializing SD card...");
-    if (!SD.begin(33))
+    if (!SD.begin())
     {
       Serial.println("initialization failed!");
       return;
@@ -133,7 +133,7 @@ class Speaker {
   }
   
   void AACSetup(){
-  audioLogger = &Serial;
+  //audioLogger = &Serial;
   in = new AudioFileSourcePROGMEM(sampleaac, sizeof(sampleaac));
   aac = new AudioGeneratorAAC();
   out = new AudioOutputI2S();
