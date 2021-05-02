@@ -7,6 +7,8 @@
  * Semester 1 2021
  */
 
+#include "led.h"
+#include "motor.h"
 #include "sdCard.h"
 #include "Playback.h"
 #include "nfcModule.h"
@@ -47,6 +49,8 @@ SdCard SDC;
 Speaker speaker;
 nfcReader* nfcReaderVal;
 LennyMicrophone mic(I2S_NUM_1, micPins, micConfig);
+LEDmod led;
+VibMotor vibration;
 
 void recordingStart()
 {
@@ -71,9 +75,14 @@ void setup(){
     delay(500);
   }
 
-  // Speaker setup
+  // Speaker and playback setup
   Serial.println("Setting up speaker...");
   speaker.WAVSetup();
+
+  Serial.println("Setting up LED and vibration motor...");
+  led.setup();
+  vibration.setup();
+  
   
   // Mic setup
   Serial.println("Setting up microphone...");
@@ -81,14 +90,14 @@ void setup(){
   pinMode(REC_BUTTON_PIN, INPUT);
 }
 
-int numer = 0;
+int numer = 1;
 
 void loop() {
   Serial.println("\nScan an NFC tag\n");
-  
+  led.setStatus(numer);
   if(nfcReaderVal->checkTag()){
     Serial.println("I scanned something!");
-    
+    numer = 3;    
     // Get UID of NFC tag
     String tagId = nfcReaderVal->returnUID();
     int strlen = tagId.length()+1;
@@ -100,7 +109,10 @@ void loop() {
     
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
+      vibration.runMotor();
       Serial.print("Recording to file ");
+      numer = 2;
+      led.setStatus(numer);
       Serial.println(fileName);
       
       // Record microphone
@@ -110,14 +122,18 @@ void loop() {
       SDC.writeToCSV(tagId.c_str(), fileName.c_str());
 
     // Recording button not pressed, play corresponding sound file
+    } else if (tagName == "no card!") {
+      Serial.print("PSYCHED");
     } else {
-      Serial.print("Playing from file ");
-      Serial.println(fileName);
-//      String audioFile = SDC.NFCtoAudio(fileName);
-      speaker.WAVSelectLoop(fileName);
+      vibration.runMotor();
+      Serial.print("Playing from file CSV search");
+      
+      String audioFile = SDC.NFCtoAudio(tagName);
+      Serial.println(audioFile);
+      speaker.WAVSelectLoop(audioFile);
     }
   }
-
+  led.setStatus(numer);
   speaker.WAVLoop();
   
   ESP.restart();
