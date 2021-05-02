@@ -57,33 +57,26 @@ void setup(){
   Serial.begin(115200);
   SD.begin(5);
   
-    // SD card setup
-  Serial.println("Starting CSV");
+  // SD card setup
+  Serial.println("Setting up CSV...");
   SDC.processCSV();
-  Serial.println("Finsih CSV");
   
   // NFC setup
   nfcReaderVal = new nfcReader();
-  Serial.println("starting NFC");
-  delay(3000);
+  Serial.println("Setting up NFC...");
+  //delay(1000);
   while(!nfcReaderVal->startNFC()){
-    Serial.println("fail nfc");
+    Serial.println("NFC failed. Trying again...");
     nfcReaderVal->nfcReset();
     delay(500);
   }
-  Serial.println("Finish NFC");
 
-    
   // Speaker setup
-  Serial.println("Starting General");
-  speaker.GeneralSetup();
-  Serial.println("Finish General");
-  Serial.println("Starting WAV");
+  Serial.println("Setting up speaker...");
   speaker.WAVSetup();
-//  speaker.AACSetup();
-  Serial.println("Finish WAV");
   
   // Mic setup
+  Serial.println("Setting up microphone...");
   mic.begin();
   pinMode(REC_BUTTON_PIN, INPUT);
 }
@@ -91,61 +84,41 @@ void setup(){
 int numer = 0;
 
 void loop() {
-//  if (numer ==0){
-//    numer++;
-//    speaker.AACSelect();
-//  }
-
-  
-
   Serial.println("\nScan an NFC tag\n");
+  
   if(nfcReaderVal->checkTag()){
-    Serial.println("I scanned Something");
+    Serial.println("I scanned something!");
+    
     // Get UID of NFC tag
     String tagId = nfcReaderVal->returnUID();
-    Serial.println("This is string");
-    Serial.println(tagId);
     int strlen = tagId.length()+1;
     char tagName[strlen];
     tagId.toCharArray(tagName,strlen);
-    Serial.println("This is char");
-    Serial.println(tagName);
 
     // Create file name
     String fileName = "/" + tagId + ".wav";
-
     
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
-
-      Serial.println("Recording mode");
+      Serial.print("Recording to file ");
+      Serial.println(fileName);
       
       // Record microphone
-      mic.record(fileName.c_str(), REC_BUTTON_PIN, nullptr);
+      mic.record(fileName.c_str(), REC_BUTTON_PIN, recordingStart);
 
       // Write record to CSV
       SDC.writeToCSV(tagId.c_str(), fileName.c_str());
 
     // Recording button not pressed, play corresponding sound file
     } else {
-      Serial.println("Playback mode");
+      Serial.print("Playing from file ");
+      Serial.println(fileName);
 //      String audioFile = SDC.NFCtoAudio(fileName);
       speaker.WAVSelectLoop(fileName);
     }
   }
 
-//    speaker.AACLoop();
   speaker.WAVLoop();
-  Serial.println("deleting");
-  delete nfcReaderVal;
-  Serial.println("recreate");
-  nfcReaderVal = new nfcReader();
-  while(!nfcReaderVal->startNFC()){
-    Serial.println("fail nfc");
-    nfcReaderVal->nfcReset();
-    delay(500);
-  }
-
   
-//  delay(2000);
+  ESP.restart();
 }

@@ -63,22 +63,22 @@ class Speaker {
     out -> SetPinout(26,25,27);
 
     // Setup SD Card
-    delay(1000);
-    Serial.print("Initializing SD card...");
-    if (!SD.begin(5))
-    {
-      Serial.println("initialization failed!");
-      return;
-    }
-    Serial.println("initialization done.");
-    delay(100);
+//    delay(1000);
+//    Serial.print("Initializing SD card...");
+//    if (!SD.begin(5))
+//    {
+//      Serial.println("initialization failed!");
+//      return;
+//    }
+//    Serial.println("initialization done.");
+//    delay(100);
   }
 
   void WAVSelectLoop(String filename){
       int strlen = filename.length()+1;
       char wavname[strlen];
       filename.toCharArray(wavname,strlen);
-      Serial.printf("attempting to play %s \n",wavname);
+//      Serial.printf("attempting to play %s \n",wavname);
 //      file = new AudioFileSourceSD("/error.wav");
       file = new AudioFileSourceSD(wavname);
       out -> SetGain(0.25); //Set the volume
@@ -86,7 +86,7 @@ class Speaker {
       //  nfcTriggered = 0;
       playing = 1;
       
-      Serial.printf("Playing track %s\n",filename);
+//      Serial.printf("Playing track %s\n",filename);
   }
   
 
