@@ -16,7 +16,7 @@ String SdCard::_NFCtoAudio(const char * receiveCode, String* NFC_code, String* a
                 return audioFile[i];
             }
         }
-        return "error.wav";
+        return "/error.wav";
 }
 
 void SdCard::processCSV() {
@@ -69,17 +69,19 @@ void SdCard::writeToCSV(const char * NFC_code, const char * audioFile) {
     Serial.begin(115200);
     SD.begin();
     _writeToCSV(SD, "/data.csv", NFC_code, audioFile);
-    //readFile(SD, "/data.csv");
     SD.end();
 }
 
 void SdCard::_writeToCSV(fs::FS &fs, const char * path, const char * NFC_code, const char * audioFile){
-    String codeString = String(NFC_code);
-    String fileString = String(audioFile);
-    String newLine = codeString + "," + fileString;
-    File file = fs.open(path, FILE_APPEND);
-    file.println(newLine);
-
+    String checkMatch = _NFCtoAudio(NFC_code);
+    String error = "/error.wav";
+    if (checkMatch == error) {
+        String codeString = String(NFC_code);
+        String fileString = String(audioFile);
+        String newLine = codeString + "," + fileString;
+        File file = fs.open(path, FILE_APPEND);
+        file.println(newLine);
+    }
 }
 
 void SdCard::readFile(fs::FS &fs, const char * path){
