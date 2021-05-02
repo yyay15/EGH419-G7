@@ -75,7 +75,6 @@ class Speaker {
   }
 
   void WAVSelectLoop(String filename){
-      SD.begin(5);
       int strlen = filename.length()+1;
       char wavname[strlen];
       filename.toCharArray(wavname,strlen);

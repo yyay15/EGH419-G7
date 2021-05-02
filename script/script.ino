@@ -55,16 +55,21 @@ void recordingStart()
   
 void setup(){
   Serial.begin(115200);
+  SD.begin(5);
+  
+    // SD card setup
+  Serial.println("Starting CSV");
+  SDC.processCSV();
+  Serial.println("Finsih CSV");
+  
   // NFC setup
   Serial.println("starting NFC");
+  delay(3000);
   while(!nfcReaderVal.startNFC()){
     Serial.println("fail nfc");
   }
   Serial.println("Finish NFC");
-  // SD card setup
-  Serial.println("Starting CSV");
-//  SDC.processCSV();
-  Serial.println("Finsih CSV");
+
     
   // Speaker setup
   Serial.println("Starting General");
