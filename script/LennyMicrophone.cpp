@@ -56,7 +56,7 @@ int LennyMicrophone::read(int16_t *samples, int count)
     return samples_read;
 }
 
-int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afterOneSecond)())
+int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afterHalfSecond)())
 {
   int16_t *samples = (int16_t *)malloc(sizeof(int16_t) * 1024);
   
@@ -83,14 +83,15 @@ int LennyMicrophone::record(const char fileName[], uint8_t buttonPin, void(*afte
     int samples_read = read(samples, 1024);
     Serial.println(samples[0]);
 
+    // Play this after half a second
+    if (numLoops == 8 && afterHalfSecond != nullptr)
+    {
+      afterHalfSecond();
+    }
+    
     // Wait until ~16000 samples
     if (numLoops >= 16)
     {
-      if (numLoops == 16 && afterOneSecond != nullptr)
-      {
-        afterOneSecond();
-      }
-      
       writer.write(samples, samples_read);
       
       Serial.print("Wrote ");

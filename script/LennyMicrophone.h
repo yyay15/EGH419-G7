@@ -62,10 +62,11 @@ public:
    * 
    * @param fileName Path to destination file on SD card.
    * @param buttonPin Digital pin of button that triggers stop recording
+   * @param afterHalfSecond Optional function callback that runs after half a second.
    * 
    * @return Number of bytes written.
    */
-  int record(const char fileName[], uint8_t buttonPin, void(*afterOneSecond)());
+  int record(const char fileName[], uint8_t buttonPin, void(*afterHalfSecond)() = NULL);
     
 private:
 

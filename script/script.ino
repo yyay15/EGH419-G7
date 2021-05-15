@@ -52,9 +52,14 @@ LennyMicrophone mic(I2S_NUM_1, micPins, micConfig);
 LEDmod led;
 VibMotor vibration;
 
+int numer = 1;
+
 void recordingStart()
 {
   Serial.println("One second passed");
+  numer = 2;
+  led.setStatus(numer);
+  vibration.runMotor();
 }
   
 void setup(){
@@ -90,8 +95,6 @@ void setup(){
   pinMode(REC_BUTTON_PIN, INPUT);
 }
 
-int numer = 1;
-
 void loop() {
   Serial.println("\nScan an NFC tag\n");
   led.setStatus(numer);
@@ -109,10 +112,7 @@ void loop() {
     
     // Recording button pressed, record sound
     if (digitalRead(REC_BUTTON_PIN) == 1) {
-      vibration.runMotor();
       Serial.print("Recording to file ");
-      numer = 2;
-      led.setStatus(numer);
       Serial.println(fileName);
       
       // Record microphone
