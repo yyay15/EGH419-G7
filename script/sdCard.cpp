@@ -71,9 +71,14 @@ void SdCard::processCSV() {
 //
 //}
 
-void SdCard::writeToCSV(const char * NFC_code, const char * audioFile) {
-    _writeToCSV(SD, "/data.csv", NFC_code, audioFile);
-    processCSV();
+void SdCard::writeToCSV(const char * newNFC_code, const char * newAudioFile) {
+    String checkMatch = _NFCtoAudio(newNFC_code, NFC_code, audioFile);
+    String error = "/error.wav";
+    if (checkMatch == error) {
+        _writeToCSV(SD, "/data.csv", newNFC_code, newAudioFile);
+        processCSV();
+    }
+
 }
 
 void SdCard::_writeToCSV(fs::FS &fs, const char * path, const char * NFC_code, const char * audioFile){
