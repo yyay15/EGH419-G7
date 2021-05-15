@@ -81,7 +81,7 @@ class Speaker {
 //      Serial.printf("attempting to play %s \n",wavname);
 //      file = new AudioFileSourceSD("/error.wav");
       file = new AudioFileSourceSD(wavname);
-      out -> SetGain(0.25); //Set the volume
+      out -> SetGain(1); //Set the volume
       wav -> begin(file,out); //Start playing the track loaded
       //  nfcTriggered = 0;
       playing = 1;
