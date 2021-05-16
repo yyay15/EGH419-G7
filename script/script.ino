@@ -65,11 +65,10 @@ void recordingStart()
 void setup(){
   Serial.begin(115200);
   SD.begin(5);
-  
   // SD card setup
   Serial.println("Setting up CSV...");
   SDC.processCSV();
-  
+
   // NFC setup
   nfcReaderVal = new nfcReader();
   Serial.println("Setting up NFC...");
@@ -119,15 +118,18 @@ void loop() {
       mic.record(fileName.c_str(), REC_BUTTON_PIN, recordingStart);
 
       // Write record to CSV
+      long start = micros(); 
       SDC.writeToCSV(tagId.c_str(), fileName.c_str());
+      long timeTaken = micros() - start;
+      Serial.print("SD time taken ");
+      Serial.println(timeTaken);
 
     // Recording button not pressed, play corresponding sound file
     } else if (tagName == "no card!") {
       Serial.print("PSYCHED");
     } else {
       vibration.runMotor();
-      Serial.print("Playing from file CSV search");
-      
+      Serial.print("Playing from file CSV search");  
       String audioFile = SDC.NFCtoAudio(tagName);
       Serial.println(audioFile);
       speaker.WAVSelectLoop(audioFile);
