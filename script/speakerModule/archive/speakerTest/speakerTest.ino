@@ -17,6 +17,7 @@ void setup()
   aac = new AudioGeneratorAAC();
   out = new AudioOutputI2S();
   out -> SetGain(0.125);
+  out -> SetPinout(26,25,27);
   aac->begin(in, out);
 }
 
